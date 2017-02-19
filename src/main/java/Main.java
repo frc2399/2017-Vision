@@ -191,25 +191,34 @@ if ( contours.size() > 0){
 		imageSource.putFrame(rgb);
 		System.out.println("Contour number: " + i + "'s area is " + area);
 		System.out.println("Contour meets requirements!");
-		u = (r.width/2) - .5;
-		v = (r.height/2) - .5;
+		u = (r.width/2);
+		v = (r.height/2);
+		double distanceFromEdgeOfImageToContour = r.x;
+		double totalDistanceToCenterOfBoundingRect = distanceFromEdgeOfImageToContour + u;
+		double remainingDistance = totalDistanceToCenterOfBoundingRect - centerOfImage;
+		
+
+		double distanceStuff = centerOfImage - u; 
+		System.out.println("Distance between center of image and center of bounding rect of contour: " + distanceStuff);
 	//	xOverZ = (u - xCenterOfImage)/focalLength;
-	//	yOverZ = (v - yCenterOfImage)/focalLength;
-	//	horizontalAngleToTarget = Math.atan((u - xCenterOfImage)/ focalLength );
+	//	yOverZ = (v - yCenterOfImlLength;
+		horizontalAngleToTarget = Math.atan((u - xCenterOfImage)/ focalLength );
 	//	verticalAngleToTarget = Math.atan((v - yCenterOfImage) / focalLength);
 	//	smartDash.putNumber("horizontal angle to target", horizontalAngleToTarget);
 	//	smartDash.putNumber("vertical angle to target", verticalAngleToTarget);
 	//	System.out.println("Horizontal angle to target: " + horizontalAngleToTarget);
 	//	System.out.println("Vertical angle to target: " + verticalAngleToTarget);
-		double angleToTarget = Math.atan( (u - centerOfImage) / focalLength);
-		System.out.println("Angle to target is: " + angleToTarget + " degrees");	
+//		double angleToTarget = Math.atan( (u - centerOfImage) / focalLength);
+//		double angleToTargetInDegrees = Math.toDegrees(angleToTarget);
+//		System.out.println("Angle to target is: " + angleToTarget + " radians");	
+//		System.out.println("Angle to target is: " + angleToTargetInDegrees + " degrees");	
 	halfOfContourLength = (r.width / 2);
-		degreesToTarget = ((imageWidth * halfOfContourLength) / fieldOfView);
-		smartDash.putNumber("degrees to target", degreesToTarget);
-		System.out.println("Degrees to target: " + degreesToTarget);
-		distanceToTarget = (boilerHeightMinusCameraHeight / Math.toDegrees(Math.tan(degreesToTarget)));
-		smartDash.putNumber("distance to target", distanceToTarget);
-		System.out.println("Distance to target: " + distanceToTarget);
+	//	degreesToTarget = ((imageWidth * halfOfContourLength) / fieldOfView);
+	//	smartDash.putNumber("degrees to target", degreesToTarget);
+	//	System.out.println("Degrees to target: " + degreesToTarget);
+//		distanceToTarget = (boilerHeightMinusCameraHeight / Math.toDegrees(Math.tan(degreesToTarget)));
+//		smartDash.putNumber("distance to target", distanceToTarget);
+//		System.out.println("Distance to target: " + distanceToTarget);
 		System.out.println("Calculated stuff that should be on the smartdashboard");
 
 		double apparentWidth = r.width;
@@ -217,6 +226,15 @@ if ( contours.size() > 0){
 		System.out.println("Ray distance is: " + rayDistance);
 		double groundDistance = calculateGroundDistance(rayDistance, boilerHeightMinusCameraHeight);
 		System.out.println("ground distance is: " + groundDistance);
+		double offset = (remainingDistance - actualWidth) / apparentWidth;
+		System.out.println("Offset is: " + offset);
+		double angleToTargetInRadians = Math.acos(offset/rayDistance);
+		double angleToTargetInDegrees = Math.toDegrees(angleToTargetInRadians);
+		System.out.println("Angle to target in radians: " + angleToTargetInRadians);
+		System.out.println("Angle to target in degrees " + angleToTargetInDegrees); 
+
+
+
 		}
 	}
 }
