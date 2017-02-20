@@ -59,11 +59,15 @@ public class Main {
 
 		Mat rgb = new Mat();
 
-		double[] rgbThresholdRed = { 0, 244 };
-		double[] rgbThresholdGreen = { 255, 255 };
-		double[] rgbThresholdBlue = { 133, 255 };
+		double[] rgbThresholdRed = { 100, 255 };
+		double[] rgbThresholdGreen = { 155, 255 };
+		double[] rgbThresholdBlue = { 158, 255 };
+//while(true){
 
-		double centerX = 0.0;
+/*	for(int r = 80; r < 255; r++){
+			for(int g = 150; g < 255; g++){
+				for(int b = 80; b < 255; b++){ 
+*/		double centerX = 0.0;
 		double height = 0.0;
 		double width = 0.0;
 		// Point tRight = new Point (0, 0);
@@ -71,10 +75,10 @@ public class Main {
 		double u;
 		double v;
 		double fieldOfView = 60;
-		double heightOfCameraOnRobot = 37;
+		double heightOfCameraOnRobot = 6;
 		// TODO make idouble boilerHieght equivilant to actual height of boiler
 		// when finished
-		double heightOfBoilerTape = 39.5; // this is from the top of the 2 in
+		double heightOfBoilerTape = 10.75; // this is from the top of the 2 in
 											// boiler retroreflective tape to
 											// the floor and in inches
 		double boilerHeightMinusCameraHeight = heightOfBoilerTape - heightOfCameraOnRobot;
@@ -91,18 +95,18 @@ public class Main {
 		double horizontalAngleToTarget;
 		double verticalAngleToTarget;
 		double focalLength = 324.571;
-		double minArea = 100.0;
-		double maxArea = 200.0;
+		double minArea = 35.0;
+		double maxArea = 65.0;
 		double minPerimeter = 275.0;
-		double minWidth = 55.0;
-		double maxWidth = 67.0;
+		double minWidth = 5.0;
+		double maxWidth = 10.0;
 		double minHeight = 0.0;
 		double maxHeight = 1000.0;
 		double[] solidity = { 0, 100.0 };
 		double maxVertices = 1000000.0;
 		double minVertices = 0.0;
-		double minRatio = 0.0;
-		double maxRatio = 0.2;
+		double minRatio = 1.0;
+		double maxRatio = 3.5;
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Point anchor = new Point(-1, 1);
 		double times = 1.0;
@@ -110,7 +114,7 @@ public class Main {
 		Scalar borderValue = new Scalar(-1);
 		xCenterOfImage = ((imageWidth / 2) - 0.5);
 		yCenterOfImage = ((imageHeight / 2) - 0.5);
-		double actualWidth = 22.75;
+		double actualWidth = 1.72;
 		double centerOfImage = imageWidth / 2;
 		// Infinitely process image
 		while (true) {
@@ -143,11 +147,13 @@ public class Main {
 					final double area = Imgproc.contourArea(contour);
 					double bbWidth = bb.width;
 					double bbHeight = bb.height;
-					// System.out.println("unfiltered contour number " + i + "'s
+				//	System.out.println("unfiltered contour number " + i + "'s
 					// area is " + area);
 					// int contourNumber;
+					
+				//	System.out.println("contour number " + i + "'s height is " + bbHeight + " and width is " + bbWidth + " and its area is " + area);
 					double ratio = bbHeight / bbWidth;
-					if ((ratio < minRatio) || (ratio > maxRatio) && ((area < minArea) || (area > maxArea))) {
+					if ((ratio < minRatio) || (ratio > maxRatio) && (( area < minArea) || (area > maxArea))) {
 						// if( (area < minArea) || (area > maxArea) ){
 						System.out.println("contour " + i + "'s ratio is " + ratio);
 						System.out.println("Contour does not meet requirements");
@@ -189,19 +195,19 @@ public class Main {
 						System.out.println("contour " + i + "'s ratio is " + ratio);
 
 						System.out.println("Contour meets requirements!");
-						Rect r = Imgproc.boundingRect(contours.get(i));
+						Rect boundingRect = Imgproc.boundingRect(contours.get(i));
 						double x = bb.x;
 						double y = bb.y;
 						Point topLeft = new Point(x, y);
 						Point bottomRight = new Point(x + bbWidth, y + bbHeight);
 						Scalar color = new Scalar(0, 0, 255);
-						System.out.println(r);
+						System.out.println(boundingRect);
 						Imgproc.rectangle(rgb, topLeft, bottomRight, color);
 						imageSource.putFrame(rgb);
 						System.out.println("Contour number: " + i + "'s area is " + area);
 						System.out.println("Contour meets requirements!");
-						u = (r.width / 2);
-						v = (r.height / 2);
+						u = (boundingRect.width / 2);
+						v = (boundingRect.height / 2);
 						// xOverZ = (u - xCenterOfImage)/focalLength;
 						// yOverZ = (v - yCenterOfImage)/focalLength;
 						// horizontalAngleToTarget = Math.atan((u -
@@ -218,13 +224,13 @@ public class Main {
 						// verticalAngleToTarget);
 						System.out.println("Calculated stuff that should be on the smartdashboard");
 
-						double apparentWidth = r.width;
+						double apparentWidth = boundingRect.width;
 						double rayDistance = calculateRayDistance(focalLength, actualWidth, apparentWidth);
 						System.out.println("Ray distance is: " + rayDistance);
 						double groundDistance = calculateGroundDistance(rayDistance, boilerHeightMinusCameraHeight);
 						System.out.println("ground distance is: " + groundDistance);
 
-		double distanceFromEdgeOfImageToContour = r.x;
+		double distanceFromEdgeOfImageToContour = boundingRect.x;
 		double totalDistanceToCenterOfBoundingRect = distanceFromEdgeOfImageToContour + u;
 		double remainingDistance = totalDistanceToCenterOfBoundingRect - centerOfImage;
 		double distanceStuff = centerOfImage - u; 
@@ -235,14 +241,16 @@ public class Main {
 		double angleToTargetInDegrees = Math.toDegrees(angleToTargetInRadians);
 		System.out.println("Angle to target in radians: " + angleToTargetInRadians);
 		System.out.println("Angle to target in degrees " + angleToTargetInDegrees); 
-
-
-					}
+				/*//	if( (boundingRect.height == 20) && (boundingRect.width == 11) ){
+						System.out.println("Ideal r is: " + r + ", ideal g is: " + g + ", ideal b is: " + b);
+					return;	
+			*/	}
+//}
 				}
 			}
 		}
 
-	}
+}	
 
 	public static double calculateRayDistance(double focalLength, double actualWidth, double apparentWidth) {
 		return ((focalLength * actualWidth) / apparentWidth);
@@ -261,4 +269,6 @@ public class Main {
 		server.setSource(camera);
 		return camera;
 	}
+
+
 }
